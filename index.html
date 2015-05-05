@@ -8,20 +8,34 @@
     <script src="http://code.ionicframework.com/1.0.0-beta.1/js/ionic.bundle.js"></script>
     <script src="js/controllers.js"></script>
     <!---
-  [x] display total score
-  [x] create a new entry
-  [x] show different entry categories
-  [x] select type of entry
-  [x] show input text
-  [x] add points on entry
-  [x] update total score when update entry
-  [] 
+  [X] quick list of location and time difference
+  [X] now time in all different location
+  [ ] create options (office hours, day/night)
+  [ ] considering my time now is another location open?
+  [ ] show me when my office hours match with other country
   -->
   </head>
   <body ng-app="app">
-    <div ng-controller="ViewCtrl" class="">
-    Hello
+    <div ng-controller="ViewCtrl" class="" data-ng-init="init()">
+      <h2>It's NOW..... in Melbourne</h2>
+      <h2>Office Hours in Melbourne {{settings.officeHours.start}}-{{settings.officeHours.end}}</h2>
+      <div class="" ng-repeat="time in data.timeZone">
+        <b>{{time.location}}</b>({{time.zone}}) {{time.officeHours.start}}-{{time.officeHours.end}} (Melbourne time)
+      </div>
+      <br>
+      Time Now
+      <div class="" ng-repeat="time in data.timeZone">
+        Location: {{time.location}} Now: {{time.time}} Date: {{time.date}} TimeZone: {{time.zone}} OfficeHours: {{time.officeHours.start}}-{{time.officeHours.end}} (Melbourne time)
+      </div>
+      <div class="table">
+        <table class="table table-bordered">
+          <tr>
+            <td  class="active">...</td>
+          </tr>
+        </table>
+      </div>
+      {{data.localTime}}
+      {{data.localOffset}}
     </div>
-
   </body>
 </html>
