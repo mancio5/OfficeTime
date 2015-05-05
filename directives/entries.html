@@ -1,0 +1,42 @@
+<div class="entries">
+  <div class="entry row" ng-repeat="entry in entries" >
+    <div class="inline" ng-click="showCatOptions(entry)" >
+      <h4><span class="category {{getGlyph(entry.cat)}}" ></span></h4>
+    </div>
+    <div class="inline" ng-show="entry.showValue">
+      <button ng-click="scoreIncrease(entry)">+</button>
+      <span class="score">{{entry.score}}</span>
+      <button ng-click="scoreDecrease(entry)">-</button>
+      <span class="text"><input>{{entry.text}}</input></span>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row" ng-show="entry.showCat" >
+      <div class="inline" ng-repeat="cat in categories">
+        <span class="{{getGlyph(cat.cat)}}" ng-click="changeCatEntry(entry,cat.cat);showCatOptions(entry);"></span>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- new entry -->
+<div class="add-entry block">
+  <div class="">
+    <span class="glyphicon glyphicon-plus" ng-click="showAddEntry()"></span>    
+  </div>
+  <div class="row" ng-show="addEntry.showCat" >
+    <div class="inline" ng-repeat="cat in categories">
+      <span class="{{cat.glyph}}" ng-click="addNewEntry(cat.cat);showAddEntry();"></span>
+    </div>
+  </div>
+</div>
+
+<!---
+addNewEntry(cat.cat);
+
+<div class="select-cat block">
+  
+    <div class="inline cat" ng-repeat="cat in categories">
+      <span class="{{cat.glyph}}" ng-click="showCatOptions(entry);"></span>
+    </div>
+  </div>
+
+-->
