@@ -6,6 +6,7 @@
     <link href="http://code.ionicframework.com/1.0.0-beta.1/css/ionic.min.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="http://code.ionicframework.com/1.0.0-beta.1/js/ionic.bundle.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="js/controllers.js"></script>
     <!---
   [X] quick list of location and time difference
@@ -34,8 +35,22 @@
           </tr>
         </table>
       </div>
-      {{data.localTime}}
-      {{data.localOffset}}
+      <div class="chart"></div>
+      <div class="" ng-repeat="time in officeHours">
+        ({{time.zone}}) {{time.start1}}-{{time.end1}}  {{time.start2}}-{{time.end2}}
+        <br>
+      </div>
+      
     </div>
   </body>
 </html>
+<style type="text/css">
+  .chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+</style>

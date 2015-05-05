@@ -5,52 +5,52 @@ app.controller('ViewCtrl', function ($scope) {
   {
     time: 13,
     officeHours : {start: 8, end: 17},
-    currentZone: +10
+    currentZone: +10,
+    span:72
   }
-  var timeZone =[
-    {location:"Melbourne",zone:+10,time:null,officeHours:{start:null,end:null}},
-    {location:"New York",zone:-5,time:null,officeHours:{start:null,end:null}},
-    {location:"Rome",zone:+1,time:null,officeHours:{start:null,end:null}},
-    {location:"London",zone:0,time:null,officeHours:{start:null,end:null}}
+  var locations =[
+    {city:"Melbourne",zone:+10},
+    {city:"New York",zone:-5},
+    {city:"Rome",zone:+1},
+    {city:"London",zone:0}
   ]
-  $scope.data = {
-    localTime : null,
-    timeZone: timeZone
-  }
-  $scope.setLocationTime = function(offset){
-    d = new Date();
-    utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-    nd = new Date(utc + (3600000*offset));
-    date = nd.toLocaleDateString();
-    time = nd.toLocaleTimeString();
-    return {date:date,time:time};
-  }
-  $scope.setOfficeHour = function(offset){
-    var cityZone = offset//offset the time zone of the country
-    var currentZone = $scope.settings.currentZone;
-    if(cityZone>=0 && currentZone >0) //both easterner than London
-      offset = (currentZone-cityZone); //difference with the current timezone
-    else if(cityZone<0 && currentZone >0) //current east other zone west
-      offset = -(currentZone-cityZone); //difference with the current timezone
-    start = $scope.settings.officeHours.start-offset;
-    if(start<0)
-      start = 24-Math.abs(start); 
-    end = $scope.settings.officeHours.end-offset;
-    if(end<0)
-      end = 24-Math.abs(end);  
-    return {start:start,end:end}
-  }
-  $scope.init = function(){
-    for( i in $scope.data.timeZone){
-      var z = $scope.data.timeZone[i]
-      var d = $scope.setLocationTime(z.zone);
-      z.time = d.time;
-      z.date = d.date;
-      var o = $scope.setOfficeHour(z.zone);
-      z.officeHours = o;
-      console.log(z);
+  $scope.officeHours = [];
+  $scope.setOfficeArray = function(){
+    for(var i=-12; i<=12; i++){
+      start1= i - ( 24 - $scope.settings.officeHours.start);
+      start2 = i + $scope.settings.officeHours.start;
+      end1 = i - ( 24 - $scope.settings.officeHours.end);
+      end2 = i + $scope.settings.officeHours.end; 
+      if(start1<-24) start1 = -24;
+      if(start1>24) start1 = 24;
+      if(start2<-24) start2 = -24;
+      if(start2>24) start2 = 24;
+      if(end1<-24) end1 = -24;
+      if(end1>24) end1 = 24;
+      if(end2<-24) end2 = -24;
+      if(end2>24) end2 = 24;
+      office = {zone:i,start1:start1,end1:end1,start2:start2,end2:end2};
+      console.log(office)
+      $scope.officeHours.push(office)
     }
   }
+  $scope.setOfficeArray();
+  $scope.drawBars = function(){
+    var data = [4, 8, 15, 16, 23, 42];
+
+    var x = d3.scale.linear()
+        .domain([0, d3.max(data)])
+        .range([0, 420]);
+
+    d3.select(".chart")
+      .selectAll("div")
+        .data(data)
+      .enter().append("div")
+        .style("width", function(d) { return x(d) + "px"; })
+        .text(function(d) { return d; });
+  }
+  $scope.drawBars();
+  
 });
 app.directive('entry', function() {
   return {
