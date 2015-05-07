@@ -95,11 +95,6 @@ app.controller('ViewCtrl', function ($scope) {
       match.end = "nomatch";//null;
 
     }
-    console.log(start1)
-    console.log(end1)
-    console.log(start2)
-    console.log(end2)
-    console.log(match)
     return ({start:match.start,end:match.end})
   }
 });
