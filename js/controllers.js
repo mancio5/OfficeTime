@@ -4,24 +4,21 @@ app.controller('ViewCtrl', function ($scope) {
   $scope.settings = 
   {
     officeHours : {start: 8, end: 17},
-    dayNight : {start: 6, end: 19},
+    awakeHours : {start: 6, end: 19},
+    freeHours : {start: 17, end: 8},
   }
-  $scope.locations =[
-    {city:"Melbourne",zone:+9},
-    {city:"New York",zone:-4},
-    {city:"Ra",zone:+4},
-    {city:"Ra",zone:+3},
-    {city:"R",zone:+2},
-    {city:"Rome",zone:+1},
-    {city:"London",zone:0}
-  ]
+  $scope.locations = db;
+  $scope.results ={
+    officeHours : [],
+    awakeHours : [],
+    freeHours : []
+  }
   $scope.temp = {
     selection : [],
     matchHours : [],
     match: null,
     matchReady: false
   }
-  $scope.officeHours = [];
 ////////////////////////////////////////////
 //// TIMING FUNCTIONS
 /////////////////////////////////////
@@ -30,7 +27,7 @@ app.controller('ViewCtrl', function ($scope) {
     $scope.temp.matchReady = false;
     $scope.temp.matchHours = [];
     if($scope.temp.selection.length<2) //only match if 2 elements
-      return;
+      return null;
     //find element in list  
     var locations = []
     for(i in $scope.temp.selection){
@@ -40,49 +37,57 @@ app.controller('ViewCtrl', function ($scope) {
     var hours = [];  
     switch(option){
       case "officeHours":
-        hours.push($scope.settings.officeHours);
+        hours = $scope.settings.officeHours;
       break;
-      case "dayNight":
-        hours.push($scope.settings.dayNight);
+      case "awakeHours":
+        hours = $scope.settings.awakeHours;
       break;
-    }      
-    for(var i=0; i<locations.length-1;i++){
-      var loc1 = locations[i];
-      var loc2 = locations[i+1];
-      var hours1 = hours[i];
-      var hours2 = $scope.hoursCompare(loc1.zone,loc2.zone,hours1);
-      hours.push(hours2);    
-    }
-    ///matching
-    var match = {};
-    for(var i=0; i<locations.length-1;i++){
-      var loc1 = locations[i+1];
-      var loc2 = locations[i];
-      if(i == 0){
-        hours1 = hours[i+1];
-        hours2 = hours[i];
-      }
-      else {
-        hours1 = hours[i];
-        hours2 = $scope.temp.match;
-      }
-      console.log(loc1.city+" "+loc2.city)
-      //match is always the last one
-      console.log("compare "+loc1.city+" "+hours1.start+" - "+hours1.end+" with "+loc2.city+" "+hours2.start+" - "+hours2.end);
-      $scope.temp.match = $scope.matchHours (hours1.start,hours1.end,hours2.start,hours2.end);
-      console.log("match: "+$scope.temp.match.start+" - "+$scope.temp.match.end);
-      
     } 
-    $scope.temp.matchReady = true;
-    //get match hours related to country
-    for(i in locations){
-      var l = locations[i];
-      console.log(l.city+" "+$scope.temp.match.start+" "+$scope.temp.match.end)
-      var h = $scope.hoursCompare(locations[locations.length-1].zone,l.zone,$scope.temp.match)
-      $scope.temp.matchHours.push({city:l.city,start:h.start,end:h.end})
-    }
     //
-    return (match.start+" - "+match.end )
+    var startIndex = endIndex = 0;
+    var s1 = locations[0].zone+hours.start;
+    var e1 = locations[0].zone+hours.end;
+    var interval = hours.end - hours.start;
+    console.log(interval)
+    for(i in locations){
+      s2 = locations[i].zone+hours.start;
+      if(interval>=Math.abs(locations[startIndex].zone - locations[i].zone)){
+        if((s2 < s1)||(startIndex==null)){
+          s1 = s2;
+          startIndex = i;
+        } 
+        e2 = locations[i].zone+hours.end;
+        if((e2 > e1 )||(endIndex==null)){
+          e1 = e2;
+          endIndex = i;
+          console.log(e2+" "+endIndex)
+        }
+      } 
+    }
+    console.log(locations)
+    //convert in local time
+    var m = false;
+    for(i in locations){
+      loc = locations[i];
+      start = $scope.timeCompare(hours.start,locations[startIndex].zone,loc.zone);
+      end = $scope.timeCompare(hours.end,locations[endIndex].zone,loc.zone);
+      console.log(start.time+" "+end.time)
+      console.log(hours.start+" "+hours.end)
+      if(!(start.time>=hours.start && start.time<hours.end && end.time>=hours.start && end.time<=hours.end)){
+        m = false;
+      }
+      else{
+        m = true;
+      }
+      $scope.temp.matchHours.push({
+        country: loc.country,
+        start:start ,
+        end: end,
+        matched: m
+      })
+    }
+    $scope.temp.matchReady = true;
+    return ({ready:$scope.temp.matchReady,match:$scope.temp.matchHours})
   }
   //what's the time in location2 when location1 is .... 
   $scope.timeCompare = function(time1,zone1,zone2){
@@ -116,11 +121,11 @@ app.controller('ViewCtrl', function ($scope) {
     return ({start:time2.start,end:time2.end})
   }
   
-  $scope.findLocationFromName = function(city1,city2){
+  $scope.findLocationFromName = function(country1,country2){
     for(i in $scope.locations){
-      if(city1 == $scope.locations[i].city)
+      if(country1 == $scope.locations[i].country)
         loc1 = $scope.locations[i];
-      if(city2 == $scope.locations[i].city)
+      if(country2 == $scope.locations[i].country)
         loc2 = $scope.locations[i];
     }
     return ({loc1:loc1,loc2:loc2})
@@ -146,34 +151,12 @@ app.controller('ViewCtrl', function ($scope) {
         match.end = end1;
       }
     }
-    /*
-    if(start2 > end1 && end2 < end1 && end2 >start1){  //
-        match.start = start1;
-        match.end = end2;
-    }  
-    else if(start2 > start1 && start2 < end1 && (end2 >= end1 ||  end2 < end1)){
-      match.start = start2;
-      match.end = end1;
-    }
-    else if(start1<=start2 && start2<end1 && end2>end1){
-      match.start = start2;
-      match.end = end1;
-    }
-    else if(start1 >= start2 && ((end2>end1)||(end2<start1))){
-      match.start = start1;
-      match.end = end1;
-    }
-    else{
-      match.start = "nomatch";//null;
-      match.end = "nomatch";//null;
-
-    }*/
     return ({start:match.start,end:match.end})
   }
 ////////////////////////////////////////////
 //// INTERACTIONs
 /////////////////////////////////////
-  $scope.addCity = function(loc){
+  $scope.addcountry = function(loc){
     var tempArray = [];
     for(i in $scope.temp.selection){
       tempArray.push($scope.temp.selection[i].obj)
@@ -183,13 +166,44 @@ app.controller('ViewCtrl', function ($scope) {
         obj: loc,
         num: 1
       })
-      console.log("addCity "+loc.city)
     }
     else{
       var i = $scope.findIndexDuplicate(tempArray,loc);
       $scope.temp.selection[i].num++;
     }
   }
+  $scope.tableMatch = function(obj){
+    if(obj.matched){
+      return "success"
+    }
+    else{
+      return "warning"
+    }
+  }
+  $scope.buildResult = function(){
+    if($scope.checkboxModel.awakeHours){
+      var s = $scope.getMatchingHours("awakeHours");
+      if(s){
+        $scope.results.awakeHours = s.match;
+        $scope.results.showAwakeHours = s.ready;
+      }
+    }
+    if($scope.checkboxModel.officeHours){
+      var s = $scope.getMatchingHours("officeHours");
+      if(s){
+        $scope.results.officeHours = s.match;
+        $scope.results.showOfficeHours = s.ready;
+      }
+    }
+    if($scope.checkboxModel.freeHours){
+      var s = $scope.getMatchingHours("officeHours");
+      if(s){
+        $scope.results.freeHours = s.match;
+        $scope.results.showFreeHours = s.ready;
+      }
+    }
+  }
+  $scope.update = function(){}
 ////////////////////////////////////////////
 //// DUPLICATE
 /////////////////////////////////////

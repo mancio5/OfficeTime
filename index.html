@@ -17,30 +17,78 @@
   -->
   </head>
   <body ng-app="app">
-    <div ng-controller="ViewCtrl" class="" data-ng-init="init()">
-      <input ng-model="search" text="Search">Search</input>
-      <table class="table table-hover">
-        <tr ng-repeat="loc in locations | filter:search" ng-click="addcountry(loc);getMatchingHours('officeHours')">
-          <td>{{loc.country}}</td><td>{{loc.zone}}</td>
-        </tr>
-      </table>
-      <div class="selection">
-        <div class="col-xs-3" ng-repeat="loc in temp.selection track by $index">{{loc.obj.country}} ({{loc.num}})</div>
-      </div>
-      <!--<select ng-model="from" ng-options="loc1.country for loc1 in locations track by loc1.country"></select>
-      from
-      <select ng-model="to" ng-options="loc1.country for loc1 in locations track by loc1.country"></select>
-      <p>
+    <div ng-controller="ViewCtrl" class="container" data-ng-init="init()">
+      <!--
+      SEARCH
       -->
-      <div class="clearfix"></div>
-      <p>
-      Common office office hours refering to {{temp.selection[0].obj.country}}:
-      </p>
-      <p ng-repeat="match in temp.matchHours track by $index" ng-show="temp.matchReady">
-        {{match.start.time}}-{{match.end.time}} ({{match.country}} time)
-        
-      </p>
+      <div class="row">
+        <div class="col-xs-4">
+          <h3>Search for country:</h3><input class="centered" ng-model="search" text="Search"></input>
+        </div>
       </div>
+      <div class="row">
+        <div class="col-xs-6">
+          <label>Office hours
+            <input type="checkbox" ng-model="checkboxModel.officeHours" ng-true-value="true" ng-false-value="false">
+          </label>
+          <label>Awake hours
+            <input type="checkbox" ng-model="checkboxModel.awakeHours" ng-true-value="true" ng-false-value="false">
+          </label>
+          <label>Free hours
+            <input type="checkbox" ng-model="checkboxModel.freeHours" ng-true-value="true" ng-false-value="false">
+          </label>
+        </div>
+      </div>
+      {{checkboxModel.officeHours}}
+      <!--
+      SELECTION
+      -->
+      <div class="row">
+        <div class="selection col-xs-12">
+          <div class="col-xs-3 country" ng-repeat="loc in temp.selection track by $index">
+            <h5>{{loc.obj.country}}<small>({{loc.num}})</small> </h5>
+          </div>
+        </div>
+      </div>
+      <!--
+      LIST
+      -->
+      <div class="row">
+        <div class="list-countries col-xs-6">
+          <table class="table table-hover">
+            <tr ng-repeat="loc in locations | filter:search" ng-click="addcountry(loc);buildResult()">
+              <td>{{loc.country}}</td><td>{{loc.zone}}</td>
+            </tr>
+          </table>
+        </div>
+        <!--
+        RESULTs
+        -->
+        <div class="col-xs-6">
+          <div class="office-hours" ng-show="results.showOfficeHours">
+            Common <b>Office hours</b> refering to {{temp.selection[0].obj.country}}:</b>
+            <table class="table table-hover">
+              <tr ng-class="tableMatch(match)" ng-repeat="match in results.officeHours track by $index" >
+                <td>{{match.start.time}}-{{match.end.time}}</td><td>({{match.country}} time)</td>
+              </tr>
+            </table>
+          </div>
+          <div class="awake-hours" ng-show="results.showAwakeHours">
+            Common <b>Awake hours</b> refering to {{temp.selection[0].obj.country}}:
+            <table class="table table-hover">
+              <tr ng-class="tableMatch(match)" ng-repeat="match in results.awakeHours track by $index">
+                <td>{{match.start.time}}-{{match.end.time}}</td><td>({{match.country}} time)</td>
+              </tr>
+            </table>
+          </div>
+          <div class="free-hours" ng-show="results.showFreeHours">
+            Common <b>Awake hours</b> refering to {{temp.selection[0].obj.country}}:
+            <table class="table table-hover">
+              <tr ng-class="tableMatch(match)" ng-repeat="match in results.freeHours track by $index">
+                <td>{{match.start.time}}-{{match.end.time}}</td><td>({{match.country}} time)</td>
+              </tr>
+            </table>
+          </div>
       <!--<p>
       Daylight match {{from.country}} and {{to.country}}: {{getMatchingHours(from,to,"dayNight")}} ({{from.country}} time)
       </p>
@@ -80,12 +128,13 @@
   </body>
 </html>
 <style type="text/css">
-  .chart div {
-  font: 10px sans-serif;
-  background-color: steelblue;
-  text-align: right;
-  padding: 3px;
-  margin: 1px;
-  color: white;
-}
+  .list-countries{
+    max-height: 300px;
+    overflow: scroll;
+  }
+  .selection .country h5{
+    background-color: steelblue;
+    padding: 5px auto 5px;
+  }
+
 </style>
