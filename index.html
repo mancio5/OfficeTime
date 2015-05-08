@@ -26,20 +26,6 @@
           <h3>Search for country:</h3><input class="centered" ng-model="search" text="Search"></input>
         </div>
       </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <label>Office hours
-            <input type="checkbox" ng-model="checkboxModel.officeHours" ng-true-value="true" ng-false-value="false">
-          </label>
-          <label>Awake hours
-            <input type="checkbox" ng-model="checkboxModel.awakeHours" ng-true-value="true" ng-false-value="false">
-          </label>
-          <label>Free hours
-            <input type="checkbox" ng-model="checkboxModel.freeHours" ng-true-value="true" ng-false-value="false">
-          </label>
-        </div>
-      </div>
-      {{checkboxModel.officeHours}}
       <!--
       SELECTION
       -->
@@ -65,11 +51,28 @@
         RESULTs
         -->
         <div class="col-xs-6">
+          <!-- hidden for the test
+          <div class="row">
+            <div class="col-xs-12">
+              <label>
+                <input type="checkbox" ng-model="checkboxModel.officeHours" ng-true-value="true" ng-false-value="false" checked="checked">Office hours
+              </label>
+              <label>
+                <input type="checkbox" ng-model="checkboxModel.awakeHours" ng-true-value="true" ng-false-value="false" checked="checked">
+                Awake hours
+              </label>
+              <label>
+                <input type="checkbox" ng-model="checkboxModel.freeHours" ng-true-value="true" ng-false-value="false" checked>
+                Free hours
+              </label>
+            </div>
+          </div>
+          -->
           <div class="office-hours" ng-show="results.showOfficeHours">
             Common <b>Office hours</b> refering to {{temp.selection[0].obj.country}}:</b>
             <table class="table table-hover">
               <tr ng-class="tableMatch(match)" ng-repeat="match in results.officeHours track by $index" >
-                <td>{{match.start.time}}-{{match.end.time}}</td><td>({{match.country}} time)</td>
+                <td>{{match.start.time}}-{{match.end.time}}</td><td>({{match.country}})</td>
               </tr>
             </table>
           </div>
@@ -77,7 +80,7 @@
             Common <b>Awake hours</b> refering to {{temp.selection[0].obj.country}}:
             <table class="table table-hover">
               <tr ng-class="tableMatch(match)" ng-repeat="match in results.awakeHours track by $index">
-                <td>{{match.start.time}}-{{match.end.time}}</td><td>({{match.country}} time)</td>
+                <td>{{match.start.time}}-{{match.end.time}}</td><td>({{match.country}})</td>
               </tr>
             </table>
           </div>

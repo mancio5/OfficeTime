@@ -19,6 +19,7 @@ app.controller('ViewCtrl', function ($scope) {
     match: null,
     matchReady: false
   }
+  $scope.checkboxModel ={}
 ////////////////////////////////////////////
 //// TIMING FUNCTIONS
 /////////////////////////////////////
@@ -51,7 +52,7 @@ app.controller('ViewCtrl', function ($scope) {
     console.log(interval)
     for(i in locations){
       s2 = locations[i].zone+hours.start;
-      if(interval>=Math.abs(locations[startIndex].zone - locations[i].zone)){
+      if(interval>Math.abs(locations[startIndex].zone - locations[i].zone)){
         if((s2 < s1)||(startIndex==null)){
           s1 = s2;
           startIndex = i;
@@ -181,6 +182,8 @@ app.controller('ViewCtrl', function ($scope) {
     }
   }
   $scope.buildResult = function(){
+    //test value debugging
+    $scope.checkboxModel.awakeHours = $scope.checkboxModel.officeHours = true;
     if($scope.checkboxModel.awakeHours){
       var s = $scope.getMatchingHours("awakeHours");
       if(s){
