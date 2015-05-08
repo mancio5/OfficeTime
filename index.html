@@ -8,6 +8,7 @@
     -->    
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="js/angular.min.js"></script>
+    <script src="js/db.js"></script>
     <script src="js/controllers.js"></script>
     <!---
   [ ] Common office hours show also time in second location
@@ -19,29 +20,29 @@
     <div ng-controller="ViewCtrl" class="" data-ng-init="init()">
       <input ng-model="search" text="Search">Search</input>
       <table class="table table-hover">
-        <tr ng-repeat="loc in locations | filter:search" ng-click="addCity(loc);getMatchingHours('officeHours')">
-          <td>{{loc.city}}</td><td>{{loc.zone}}</td>
+        <tr ng-repeat="loc in locations | filter:search" ng-click="addcountry(loc);getMatchingHours('officeHours')">
+          <td>{{loc.country}}</td><td>{{loc.zone}}</td>
         </tr>
       </table>
       <div class="selection">
-        <div class="col-xs-3" ng-repeat="loc in temp.selection track by $index">{{loc.obj.city}} ({{loc.num}})</div>
+        <div class="col-xs-3" ng-repeat="loc in temp.selection track by $index">{{loc.obj.country}} ({{loc.num}})</div>
       </div>
-      <!--<select ng-model="from" ng-options="loc1.city for loc1 in locations track by loc1.city"></select>
+      <!--<select ng-model="from" ng-options="loc1.country for loc1 in locations track by loc1.country"></select>
       from
-      <select ng-model="to" ng-options="loc1.city for loc1 in locations track by loc1.city"></select>
+      <select ng-model="to" ng-options="loc1.country for loc1 in locations track by loc1.country"></select>
       <p>
       -->
       <div class="clearfix"></div>
       <p>
-      Common office office hours:
+      Common office office hours refering to {{temp.selection[0].obj.country}}:
       </p>
       <p ng-repeat="match in temp.matchHours track by $index" ng-show="temp.matchReady">
-        {{match.start}}-{{match.end}} ({{match.city}} time)
+        {{match.start.time}}-{{match.end.time}} ({{match.country}} time)
         
       </p>
       </div>
       <!--<p>
-      Daylight match {{from.city}} and {{to.city}}: {{getMatchingHours(from,to,"dayNight")}} ({{from.city}} time)
+      Daylight match {{from.country}} and {{to.country}}: {{getMatchingHours(from,to,"dayNight")}} ({{from.country}} time)
       </p>
       
       <div ng-repeat="loc1 in locations">
